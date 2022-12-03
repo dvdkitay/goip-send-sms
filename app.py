@@ -18,7 +18,7 @@ def args_filter():
     parser = argparse.ArgumentParser()
     
     parser.add_argument(
-        '--p', dest='provider', type=str, default=''
+        '--provider', dest='provider', type=str, default=''
     )
     
     parser.add_argument(
@@ -37,10 +37,10 @@ def args_filter():
     args = parser.parse_args()
     
     return {
-        "p": args.text, 
+        "provider": args.text, 
         "goip": args.file,
-        "file": args.text, 
-        "text": args.file
+        "file": args.file, 
+        "text": args.text
     }
     
 def run():
@@ -51,10 +51,10 @@ def run():
             "SMS_PROVIDER": args.get("provider"),
             "GOIP_NAME": args.get("goip"),
             "FILE": args.get("file"),
-            "TEXT": args.get("text"),
+            "SMS_TEXT": args.get("text"),
         }
     
-    if not configs["SMS_PROVIDER"] or not configs["GOIP_NAME"] or not configs["FILE"] or not configs["TEXT"]:
+    if not configs["SMS_PROVIDER"] or not configs["GOIP_NAME"] or not configs["FILE"] or not configs["SMS_TEXT"]:
         logging.error("Обязательны для передачи скрипту: Смс провайдер, Имя GOIP, Файл, Текст")
         return False
         
@@ -70,7 +70,8 @@ def run():
             logging.info(f"Отправляем смс на номер: {SMS_NUMBER}")
             
             sms = req.send_sms(
-                SMS_PROVIDER, GOIP_NAME, SMS_NUMBER, SMS_TEXT
+                configs["SMS_PROVIDER"], configs["GOIP_NAME"], 
+                configs["FILE"], configs["SMS_TEXT"]
             )
     
             if not sms:
